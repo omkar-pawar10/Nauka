@@ -107,7 +107,7 @@ export function OptimizationCore() {
         </div>
       </header>
 
-      <div className="grid grid-cols-4 gap-6 flex-1">
+      <div className="flex flex-col lg:grid lg:grid-cols-4 gap-6 flex-1 lg:min-h-0 overflow-y-auto lg:overflow-hidden">
         <div className="col-span-3 flex flex-col gap-6">
           <div className="border border-white/10 bg-[#0a0a0a] p-6">
             <h3 className="text-[10px] uppercase tracking-widest text-white/40 mb-4">Engine Status</h3>

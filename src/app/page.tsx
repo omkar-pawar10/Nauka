@@ -14,7 +14,7 @@ export default function Home() {
   const [currentView, setCurrentView] = useState<ViewId>("operations");
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-black text-white">
+    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden bg-black text-white">
       <Sidebar currentView={currentView} onViewChange={setCurrentView} />
       
       <div className="flex-1 flex flex-col min-w-0">

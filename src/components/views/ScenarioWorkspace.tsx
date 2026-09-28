@@ -24,14 +24,14 @@ export function ScenarioWorkspace() {
         <p className="text-sm text-white/40 mt-1">Optimization Formulation Constraints & Objectives</p>
       </header>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="col-span-2 space-y-6">
           <div className="border border-white/10 bg-[#0a0a0a] p-6">
             <h3 className="text-xs uppercase tracking-widest font-bold mb-6 flex items-center gap-2">
               <span className="w-2 h-2 bg-accent-orange block"></span>
               Decision Variables
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { label: "Vessel Mix", val: "Global Fleet (All Classes)" },
                 { label: "Capacity (TEU)", val: "10,000 - 24,000" },

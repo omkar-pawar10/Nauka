@@ -15,7 +15,7 @@ export function OperationsOverview() {
         </div>
       </header>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Active Vessels", value: "142", unit: "UNITS", color: "text-white" },
           { label: "Est. Fuel Saved Today", value: "34.2", unit: "MT", color: "text-accent-green" },

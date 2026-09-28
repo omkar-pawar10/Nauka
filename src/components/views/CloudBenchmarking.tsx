@@ -120,7 +120,7 @@ export function CloudBenchmarking() {
         </button>
       </header>
 
-      <div className="grid grid-cols-4 gap-6 flex-1 min-h-0">
+      <div className="flex flex-col lg:grid lg:grid-cols-4 gap-6 flex-1 lg:min-h-0 overflow-y-auto lg:overflow-hidden">
         <div className="col-span-3 border border-white/10 bg-[#0a0a0a] flex flex-col relative">
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
             <h3 className="text-xs uppercase tracking-widest font-bold">Solver Convergence Profile</h3>

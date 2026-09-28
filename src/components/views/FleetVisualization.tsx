@@ -32,9 +32,9 @@ export function FleetVisualization() {
         </div>
       </header>
 
-      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
         {/* Left Pane: Active Vessels */}
-        <div className="w-80 border-r border-white/10 bg-[#0a0a0a] flex flex-col">
+        <div className="w-full md:w-80 h-64 md:h-auto border-b md:border-b-0 md:border-r border-white/10 bg-[#0a0a0a] flex flex-col shrink-0">
           <div className="p-4 border-b border-white/10">
             <h3 className="text-xs uppercase tracking-widest font-bold">Active Fleet</h3>
           </div>

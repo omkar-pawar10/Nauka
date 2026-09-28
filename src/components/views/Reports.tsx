@@ -32,7 +32,7 @@ export function Reports() {
         <p className="text-sm text-white/40 mt-1">Generate fleet allocation and emission profiles.</p>
       </header>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[
           {
             title: "Fleet Allocation Master",

@@ -27,7 +27,7 @@ export function DataFoundation() {
         <p className="text-sm text-white/40 mt-1">Batch Importer / Scrubber and ML Fuel Consumption Prediction</p>
       </header>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="border border-white/10 bg-[#0a0a0a] flex flex-col">
           <div className="p-4 border-b border-white/10 bg-white/5">
             <h3 className="text-xs uppercase tracking-widest font-bold">Static AIS Extracts Scrubber</h3>
