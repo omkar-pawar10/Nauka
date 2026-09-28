@@ -1,23 +1,34 @@
 "use client";
 
-import { BarChart3 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { BarChart3, Loader2, Play } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-const mockConvergenceData = Array.from({ length: 50 }, (_, i) => {
-  return {
-    iteration: i * 10,
-    qpso: 1000 - 800 * (1 - Math.exp(-i / 10)) + (Math.random() * 20 - 10),
-    pso: 1000 - 650 * (1 - Math.exp(-i / 15)) + (Math.random() * 30 - 15),
-    ga: 1000 - 500 * (1 - Math.exp(-i / 20)) + (Math.random() * 40 - 20),
-  };
-});
+import { SolverResult } from "@/lib/solvers/types";
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface BenchmarkDataPoint {
+  iteration: number;
+  qpso?: number;
+  pso?: number;
+  ga?: number;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    color: string;
+    name: string;
+    value: number;
+  }>;
+  label?: string | number;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-black border border-white/20 p-3 flex flex-col gap-2 shadow-xl shadow-black/50">
         <p className="text-[10px] uppercase tracking-widest text-white/40 mb-1">Iteration {label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <div key={index} className="flex items-center justify-between gap-4">
             <span className="text-xs uppercase tracking-widest" style={{ color: entry.color }}>
               {entry.name}
@@ -34,14 +45,79 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function CloudBenchmarking() {
+  const [data, setData] = useState<BenchmarkDataPoint[]>([]);
+  const [running, setRunning] = useState(false);
+  
+  const workerQPSO = useRef<Worker | null>(null);
+  const workerPSO = useRef<Worker | null>(null);
+  const workerGA = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    return () => {
+      workerQPSO.current?.terminate();
+      workerPSO.current?.terminate();
+      workerGA.current?.terminate();
+    };
+  }, []);
+
+  const handleRunBenchmark = () => {
+    setRunning(true);
+    setData([]);
+
+    workerQPSO.current = new Worker(new URL('@/lib/worker.ts', import.meta.url));
+    workerPSO.current = new Worker(new URL('@/lib/worker.ts', import.meta.url));
+    workerGA.current = new Worker(new URL('@/lib/worker.ts', import.meta.url));
+
+    const results: { qpso: SolverResult | null; pso: SolverResult | null; ga: SolverResult | null } = { qpso: null, pso: null, ga: null };
+    
+    const checkComplete = () => {
+      if (results.qpso && results.pso && results.ga) {
+        // Merge convergence histories
+        // Standardize lengths assuming maxIterations is 500
+        const merged: BenchmarkDataPoint[] = [];
+        for (let i = 0; i < 500; i++) {
+          if (i % 5 === 0) { // Sample every 5 iterations to avoid crowding graph
+            merged.push({
+              iteration: i,
+              qpso: results.qpso.convergenceHistory[i],
+              pso: results.pso.convergenceHistory[i],
+              ga: results.ga.convergenceHistory[i]
+            });
+          }
+        }
+        setData(merged);
+        setRunning(false);
+      }
+    };
+
+    workerQPSO.current.onmessage = (e) => { results.qpso = e.data.result; checkComplete(); };
+    workerPSO.current.onmessage = (e) => { results.pso = e.data.result; checkComplete(); };
+    workerGA.current.onmessage = (e) => { results.ga = e.data.result; checkComplete(); };
+
+    const config = { maxIterations: 500, populationSize: 20 };
+    workerQPSO.current.postMessage({ solver: 'QPSO', config, seedVal: 42 });
+    workerPSO.current.postMessage({ solver: 'PSO', config, seedVal: 42 });
+    workerGA.current.postMessage({ solver: 'GA', config, seedVal: 42 });
+  };
+
   return (
     <div className="p-8 h-full flex flex-col gap-6">
-      <header>
-        <h2 className="text-xl font-bold tracking-widest uppercase flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-accent-orange" />
-          Cloud Benchmarking
-        </h2>
-        <p className="text-sm text-white/40 mt-1">Batch Benchmark Orchestrator - Convergence Comparison</p>
+      <header className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold tracking-widest uppercase flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-accent-orange" />
+            Cloud Benchmarking
+          </h2>
+          <p className="text-sm text-white/40 mt-1">Batch Benchmark Orchestrator - Convergence Comparison</p>
+        </div>
+        <button 
+          onClick={handleRunBenchmark}
+          disabled={running}
+          className="flex items-center gap-2 bg-white/5 border border-white/20 px-4 py-2 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors disabled:opacity-50"
+        >
+          {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+          {running ? "Benchmarking..." : "Run Benchmark"}
+        </button>
       </header>
 
       <div className="grid grid-cols-4 gap-6 flex-1 min-h-0">
@@ -60,9 +136,20 @@ export function CloudBenchmarking() {
               </div>
             </div>
           </div>
-          <div className="flex-1 p-6 min-h-0">
+          <div className="flex-1 p-6 min-h-0 relative">
+            {data.length === 0 && !running && (
+              <div className="absolute inset-0 flex items-center justify-center text-white/40 uppercase tracking-widest text-xs">
+                Awaiting Benchmark Run
+              </div>
+            )}
+            {running && data.length === 0 && (
+              <div className="absolute inset-0 flex flex-col gap-4 items-center justify-center text-accent-green uppercase tracking-widest text-xs">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                Executing Solvers in Background Threads...
+              </div>
+            )}
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={mockConvergenceData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+              <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <XAxis 
                   dataKey="iteration" 
                   stroke="rgba(255,255,255,0.1)" 

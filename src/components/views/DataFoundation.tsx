@@ -1,6 +1,22 @@
-import { Database, CheckCircle2, AlertCircle } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Database, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { fetchActiveFleet } from "@/lib/api";
+import { VesselSpecs } from "@/lib/physics";
+import { uniform } from "@/lib/rng";
 
 export function DataFoundation() {
+  const [fleet, setFleet] = useState<(VesselSpecs & { id: string; name: string })[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchActiveFleet().then(data => {
+      setFleet(data);
+      setLoading(false);
+    });
+  }, []);
+
   return (
     <div className="p-8 h-full flex flex-col gap-6 overflow-y-auto">
       <header>
@@ -17,41 +33,46 @@ export function DataFoundation() {
             <h3 className="text-xs uppercase tracking-widest font-bold">Static AIS Extracts Scrubber</h3>
           </div>
           <div className="p-4 flex-1">
-            <table className="w-full text-sm text-left">
-              <thead>
-                <tr className="text-[10px] uppercase tracking-widest text-white/40 border-b border-white/10">
-                  <th className="pb-2 font-normal">Vessel Name</th>
-                  <th className="pb-2 font-normal">IMO</th>
-                  <th className="pb-2 font-normal">Data Quality</th>
-                  <th className="pb-2 font-normal text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {[
-                  { name: "MV Ocean Pioneer", imo: "9345678", quality: "98.5%", status: "CLEARED" },
-                  { name: "Global Sentinel", imo: "9876543", quality: "99.1%", status: "CLEARED" },
-                  { name: "Pacific Voyager", imo: "9123456", quality: "76.2%", status: "AUGMENTED" },
-                  { name: "Arctic Trader", imo: "9456789", quality: "95.4%", status: "CLEARED" },
-                ].map((row, i) => (
-                  <tr key={i}>
-                    <td className="py-3 font-medium text-white/80">{row.name}</td>
-                    <td className="py-3 text-white/50">{row.imo}</td>
-                    <td className="py-3 font-mono text-xs">{row.quality}</td>
-                    <td className="py-3 text-right">
-                      {row.status === "CLEARED" ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest text-accent-green">
-                          <CheckCircle2 className="w-3 h-3" /> {row.status}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest text-accent-orange">
-                          <AlertCircle className="w-3 h-3" /> {row.status}
-                        </span>
-                      )}
-                    </td>
+            {loading ? (
+              <div className="flex items-center justify-center h-full text-white/40">
+                <Loader2 className="w-6 h-6 animate-spin" />
+              </div>
+            ) : (
+              <table className="w-full text-sm text-left">
+                <thead>
+                  <tr className="text-[10px] uppercase tracking-widest text-white/40 border-b border-white/10">
+                    <th className="pb-2 font-normal">Vessel Name</th>
+                    <th className="pb-2 font-normal">IMO / ID</th>
+                    <th className="pb-2 font-normal">Data Quality</th>
+                    <th className="pb-2 font-normal text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {fleet.map((vessel) => {
+                    const quality = vessel.class === 'Suezmax' ? '76.2%' : (95 + uniform() * 4).toFixed(1) + '%';
+                    const status = vessel.class === 'Suezmax' ? 'AUGMENTED' : 'CLEARED';
+                    return (
+                      <tr key={vessel.id}>
+                        <td className="py-3 font-medium text-white/80">{vessel.name}</td>
+                        <td className="py-3 text-white/50">{vessel.id}</td>
+                        <td className="py-3 font-mono text-xs">{quality}</td>
+                        <td className="py-3 text-right">
+                          {status === "CLEARED" ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest text-accent-green">
+                              <CheckCircle2 className="w-3 h-3" /> {status}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest text-accent-orange">
+                              <AlertCircle className="w-3 h-3" /> {status}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 

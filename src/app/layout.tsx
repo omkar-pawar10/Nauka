@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Maritime Fleet Optimization Platform",
+  title: "Nauka",
   description: "Frontend-only interactive demonstration prototype",
+  openGraph: {
+    title: "Nauka",
+    description: "Maritime Fleet Optimization Prototype",
+    type: "website"
+  }
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} dark bg-black text-white h-full antialiased`}>
+    <html lang="en" className="dark bg-black text-white h-full antialiased">
       <body className="min-h-full flex flex-col bg-black text-foreground selection:bg-accent-orange/30">
         {children}
       </body>

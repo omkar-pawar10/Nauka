@@ -1,6 +1,19 @@
+"use client";
+
 import { Settings2 } from "lucide-react";
+import { useSystemStore } from "@/lib/store";
 
 export function ScenarioWorkspace() {
+  const { scenario, setScenario } = useSystemStore();
+
+  const getCiiRating = (val: number) => {
+    return ['A', 'B', 'C', 'D', 'E'][val - 1] || 'C';
+  };
+
+  const handleSave = () => {
+    alert("Scenario saved (Persisted to IndexedDB via Zustand middleware)");
+  };
+
   return (
     <div className="p-8 h-full flex flex-col gap-6 overflow-y-auto">
       <header>
@@ -44,22 +57,22 @@ export function ScenarioWorkspace() {
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] uppercase tracking-widest text-white/40">Cargo Volume Target</label>
                 <div className="flex items-center gap-4">
-                  <input type="range" className="flex-1 accent-white" defaultValue="80" />
-                  <span className="text-xs font-mono w-16 text-right">80%</span>
+                  <input type="range" className="flex-1 accent-white" value={scenario.cargoVolumeTarget} onChange={e => setScenario({ cargoVolumeTarget: Number(e.target.value) })} min="0" max="100" />
+                  <span className="text-xs font-mono w-16 text-right">{scenario.cargoVolumeTarget}%</span>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] uppercase tracking-widest text-white/40">Schedule Windows (Slack)</label>
                 <div className="flex items-center gap-4">
-                  <input type="range" className="flex-1 accent-white" defaultValue="48" />
-                  <span className="text-xs font-mono w-16 text-right">±48 HRS</span>
+                  <input type="range" className="flex-1 accent-white" value={scenario.scheduleSlackHours} onChange={e => setScenario({ scheduleSlackHours: Number(e.target.value) })} min="0" max="168" />
+                  <span className="text-xs font-mono w-16 text-right">&plusmn;{scenario.scheduleSlackHours} HRS</span>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] uppercase tracking-widest text-white/40">Emission Limits (CII Threshold)</label>
                 <div className="flex items-center gap-4">
-                  <input type="range" className="flex-1 accent-white" defaultValue="3" max="5" />
-                  <span className="text-xs font-mono w-16 text-right">RATING C</span>
+                  <input type="range" className="flex-1 accent-white" value={scenario.ciiThresholdRating} onChange={e => setScenario({ ciiThresholdRating: Number(e.target.value) })} min="1" max="5" />
+                  <span className="text-xs font-mono w-16 text-right">RATING {getCiiRating(scenario.ciiThresholdRating)}</span>
                 </div>
               </div>
             </div>
@@ -70,19 +83,19 @@ export function ScenarioWorkspace() {
           <div className="border border-white/10 bg-[#0a0a0a] p-6">
              <h3 className="text-xs uppercase tracking-widest font-bold mb-6">Objectives</h3>
              <div className="space-y-3">
-               {[
-                 { label: "Minimize Fuel Consumption", active: true },
-                 { label: "Minimize Emissions (CO2e)", active: true },
-                 { label: "Minimize Total Cost", active: false }
-               ].map((obj, i) => (
-                 <div key={i} className={`border ${obj.active ? 'border-accent-green/50 bg-accent-green/10 text-accent-green' : 'border-white/10 bg-black text-white/40'} p-3 text-xs uppercase tracking-widest cursor-pointer hover:border-white/30 transition-colors`}>
-                   {obj.label}
-                 </div>
-               ))}
+               <div onClick={() => setScenario({ minimizeFuel: !scenario.minimizeFuel })} className={`border ${scenario.minimizeFuel ? 'border-accent-green/50 bg-accent-green/10 text-accent-green' : 'border-white/10 bg-black text-white/40'} p-3 text-xs uppercase tracking-widest cursor-pointer hover:border-white/30 transition-colors`}>
+                 Minimize Fuel Consumption
+               </div>
+               <div onClick={() => setScenario({ minimizeEmissions: !scenario.minimizeEmissions })} className={`border ${scenario.minimizeEmissions ? 'border-accent-green/50 bg-accent-green/10 text-accent-green' : 'border-white/10 bg-black text-white/40'} p-3 text-xs uppercase tracking-widest cursor-pointer hover:border-white/30 transition-colors`}>
+                 Minimize Emissions (CO2e)
+               </div>
+               <div onClick={() => setScenario({ minimizeCost: !scenario.minimizeCost })} className={`border ${scenario.minimizeCost ? 'border-accent-green/50 bg-accent-green/10 text-accent-green' : 'border-white/10 bg-black text-white/40'} p-3 text-xs uppercase tracking-widest cursor-pointer hover:border-white/30 transition-colors`}>
+                 Minimize Total Cost
+               </div>
              </div>
           </div>
           
-          <button className="w-full bg-accent-orange text-black font-bold uppercase tracking-widest text-sm py-4 hover:bg-accent-orange/90 transition-colors">
+          <button onClick={handleSave} className="w-full bg-accent-orange text-black font-bold uppercase tracking-widest text-sm py-4 hover:bg-accent-orange/90 transition-colors">
             Save Scenario
           </button>
         </div>

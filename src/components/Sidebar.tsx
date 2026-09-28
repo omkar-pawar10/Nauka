@@ -8,6 +8,7 @@ import {
   FileText 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSystemStore } from "@/lib/store";
 
 export const views = [
   { id: "operations", label: "Operations Overview", icon: LayoutDashboard },
@@ -27,6 +28,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ currentView, onViewChange }: SidebarProps) {
+  const { engineState } = useSystemStore();
+
   return (
     <aside className="w-64 border-r border-white/10 bg-[#000000] flex flex-col h-full">
       <div className="p-6 border-b border-white/10">
@@ -34,7 +37,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
           <div className="w-4 h-4 bg-accent-orange/20 border border-accent-orange flex items-center justify-center">
             <div className="w-1.5 h-1.5 bg-accent-orange" />
           </div>
-          Q-Fleet Optima
+          Nauka
         </h1>
       </div>
       
@@ -69,9 +72,9 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
       </div>
 
       <div className="p-4 border-t border-white/10">
-        <div className="flex items-center gap-3 px-3 py-2 text-xs text-white/40">
-          <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse" />
-          SYSTEM NOMINAL
+        <div className="flex items-center gap-3 px-3 py-2 text-xs text-white/40 uppercase tracking-widest">
+          <div className={`w-2 h-2 rounded-full border ${engineState === 'RUNNING' ? 'border-accent-green bg-accent-green animate-pulse' : 'border-white/40'}`} />
+          {engineState === 'RUNNING' ? 'SYSTEM RUNNING' : 'SYSTEM IDLE'}
         </div>
       </div>
     </aside>

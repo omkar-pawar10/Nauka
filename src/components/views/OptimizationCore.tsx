@@ -1,48 +1,81 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Cpu, Play, Square, Terminal } from "lucide-react";
-
-type EngineState = "READY" | "QUEUED" | "RUNNING" | "COMPLETED";
+import { useSystemStore } from "@/lib/store";
 
 export function OptimizationCore() {
-  const [engineState, setEngineState] = useState<EngineState>("READY");
-  const [progress, setProgress] = useState(0);
-  const [logs, setLogs] = useState<string[]>(["> SYSTEM READY. AWAITING BATCH JOB TRIGGER."]);
+  const {
+    engineState, setEngineState,
+    logs, addLog, clearLogs,
+    progress, setProgress,
+    setLastSolverRunTimeMs
+  } = useSystemStore();
+
+  const workerRef = useRef<Worker | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (engineState === "RUNNING") {
-      const interval = setInterval(() => {
-        setProgress(p => {
-          if (p >= 100) {
-            setEngineState("COMPLETED");
-            setLogs(l => [...l, "> BATCH JOB COMPLETED. WRITING RESULTS TO POSTGRES."]);
-            return 100;
-          }
-          if (p % 20 === 0) {
-            setLogs(l => [...l, `> QPSO ITERATION ${p * 10}: CONVERGING...`]);
-          }
-          return p + 2;
-        });
-      }, 200);
-      return () => clearInterval(interval);
-    }
-  }, [engineState]);
+    return () => {
+      workerRef.current?.terminate();
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const handleStart = () => {
     setEngineState("QUEUED");
-    setLogs(["> QUEUING JOB TO GPU CLUSTER..."]);
-    setTimeout(() => {
+    clearLogs();
+    addLog("> QUEUING JOB TO BACKGROUND WORKER THREAD...");
+    setProgress(0);
+
+    timerRef.current = setTimeout(() => {
       setEngineState("RUNNING");
-      setLogs(l => [...l, "> INITIALIZING QUANTUM-INSPIRED PSO ENGINE (QPSO)..."]);
-      setProgress(0);
+      addLog("> INITIALIZING QUANTUM-INSPIRED PSO ENGINE (QPSO)...");
+      
+      workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url));
+      
+      // Visual progress simulator since web worker may be too fast
+      let p = 0;
+      intervalRef.current = setInterval(() => {
+        p += 5;
+        if (p < 99) {
+          setProgress(p);
+          if (p % 20 === 0) {
+            addLog(`> QPSO ITERATION ${p * 10}: CONVERGING...`);
+          }
+        }
+      }, 200);
+
+      workerRef.current.onmessage = (e) => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setProgress(100);
+        setEngineState("COMPLETED");
+        const elapsed = Math.round(e.data.result.timeElapsedMs);
+        setLastSolverRunTimeMs(elapsed);
+        addLog(`> BATCH JOB COMPLETED IN ${elapsed} MS.`);
+        addLog(`> BEST FITNESS: ${e.data.result.bestFitness.toFixed(4)}`);
+        addLog("> WRITING RESULTS TO POSTGRES (INDEXEDDB)...");
+        workerRef.current?.terminate();
+      };
+
+      workerRef.current.postMessage({
+        solver: 'QPSO',
+        config: { maxIterations: 1000, populationSize: 50 },
+        seedVal: 12345
+      });
+      
     }, 1500);
   };
 
   const handleStop = () => {
+    workerRef.current?.terminate();
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setEngineState("READY");
     setProgress(0);
-    setLogs(["> SYSTEM READY. AWAITING BATCH JOB TRIGGER."]);
+    clearLogs();
   };
 
   return (
@@ -79,14 +112,14 @@ export function OptimizationCore() {
           <div className="border border-white/10 bg-[#0a0a0a] p-6">
             <h3 className="text-[10px] uppercase tracking-widest text-white/40 mb-4">Engine Status</h3>
             <div className="flex items-center gap-8 mb-6">
-              {["READY", "QUEUED", "RUNNING", "COMPLETED"].map((state, i) => (
-                <div key={state} className="flex items-center gap-3">
+              {["READY", "QUEUED", "RUNNING", "COMPLETED"].map((s, i) => (
+                <div key={s} className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full border flex items-center justify-center
-                    ${engineState === state 
-                      ? state === "RUNNING" ? "border-accent-green bg-accent-green animate-pulse" : "border-accent-orange bg-accent-orange" 
+                    ${engineState === s 
+                      ? s === "RUNNING" ? "border-accent-green bg-accent-green animate-pulse" : "border-accent-orange bg-accent-orange" 
                       : "border-white/20 bg-transparent"}
                   `} />
-                  <span className={`text-xs uppercase tracking-widest ${engineState === state ? "text-white" : "text-white/40"}`}>{state}</span>
+                  <span className={`text-xs uppercase tracking-widest ${engineState === s ? "text-white" : "text-white/40"}`}>{s}</span>
                   {i < 3 && <div className="w-8 h-px bg-white/10 ml-4" />}
                 </div>
               ))}

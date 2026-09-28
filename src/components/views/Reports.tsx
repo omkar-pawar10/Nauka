@@ -1,6 +1,27 @@
+"use client";
+
 import { FileText, Download, FileJson, FileSpreadsheet } from "lucide-react";
+import { useSystemStore } from "@/lib/store";
 
 export function Reports() {
+  const { scenario, logs, engineState } = useSystemStore();
+
+  const handleExport = (reportTitle: string, format: string) => {
+    if (format === 'JSON') {
+      const dataStr = JSON.stringify({ scenario, engineState, logs }, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = 'nauka-export.json';
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+    } else {
+      alert(`Exporting ${reportTitle} in ${format} format... (Generated from local browser data)`);
+    }
+  };
+
   return (
     <div className="p-8 h-full flex flex-col gap-6 overflow-y-auto">
       <header>
@@ -40,7 +61,7 @@ export function Reports() {
               <span className="text-[10px] uppercase tracking-widest text-white/30">{report.date}</span>
               <div className="flex gap-2">
                 {report.formats.map(format => (
-                  <button key={format} className="flex items-center gap-1 border border-white/10 bg-black px-2 py-1 text-[10px] uppercase tracking-widest text-white/60 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all">
+                  <button key={format} onClick={() => handleExport(report.title, format)} className="flex items-center gap-1 border border-white/10 bg-black px-2 py-1 text-[10px] uppercase tracking-widest text-white/60 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all">
                     {format === 'JSON' ? <FileJson className="w-3 h-3" /> : format === 'CSV' || format === 'XLSX' ? <FileSpreadsheet className="w-3 h-3" /> : <Download className="w-3 h-3" />}
                     {format}
                   </button>
