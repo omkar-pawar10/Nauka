@@ -49,3 +49,25 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+@keyframes splash-scale {
+  0% { 
+    transform: scale(0.8); 
+    opacity: 0; 
+    filter: blur(12px); 
+  }
+  40% { 
+    transform: scale(1.05); 
+    opacity: 1; 
+    filter: blur(0px); 
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1; 
+    filter: blur(0px); 
+  }
+}
+
+.animate-splash-logo {
+  animation: splash-scale 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

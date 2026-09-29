@@ -27,18 +27,30 @@ interface SidebarProps {
   onViewChange: (view: ViewId) => void;
 }
 
+import Image from "next/image";
+
 export function Sidebar({ currentView, onViewChange }: SidebarProps) {
   const { engineState } = useSystemStore();
 
   return (
     <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/10 bg-[#000000] flex flex-col md:h-full shrink-0 z-10">
       <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between">
-        <h1 className="text-sm font-bold tracking-widest text-accent-orange uppercase flex items-center gap-2">
-          <div className="w-4 h-4 bg-accent-orange/20 border border-accent-orange flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-accent-orange" />
+        <button 
+          onClick={() => onViewChange("operations")}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity focus:outline-none"
+        >
+          <div className="relative w-7 h-7">
+            <Image 
+              src="/logo.jpg" 
+              alt="Nauka Logo" 
+              fill 
+              className="object-contain" 
+            />
           </div>
-          Nauka
-        </h1>
+          <h1 className="text-sm font-bold tracking-widest text-accent-orange uppercase">
+            Nauka
+          </h1>
+        </button>
         <div className="flex md:hidden items-center gap-3 px-3 py-1 text-xs text-white/40 uppercase tracking-widest">
           <div className={`w-2 h-2 rounded-full border ${engineState === 'RUNNING' ? 'border-accent-green bg-accent-green animate-pulse' : 'border-white/40'}`} />
         </div>
