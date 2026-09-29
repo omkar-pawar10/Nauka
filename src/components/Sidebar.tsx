@@ -41,7 +41,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
         >
           <div className="relative w-7 h-7">
             <Image 
-              src="/logo.jpg" 
+              src="/logo.jpeg" 
               alt="Nauka Logo" 
               fill 
               className="object-contain" 

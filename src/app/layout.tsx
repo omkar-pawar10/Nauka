@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "Nauka",
   description: "Frontend-only interactive demonstration prototype",
   icons: {
-    icon: "/logo.jpg",
-    shortcut: "/logo.jpg",
-    apple: "/logo.jpg",
+    icon: "/logo.jpeg",
+    shortcut: "/logo.jpeg",
+    apple: "/logo.jpeg",
   },
   openGraph: {
     title: "Nauka",

@@ -44,7 +44,7 @@ export function SplashScreen() {
     >
       <div className="relative w-48 h-48 md:w-64 md:h-64 animate-splash-logo">
         <Image 
-          src="/logo.jpg" 
+          src="/logo.jpeg" 
           alt="Nauka Logo" 
           fill 
           className="object-contain"
