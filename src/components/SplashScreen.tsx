@@ -56,7 +56,7 @@ export function SplashScreen() {
       </div>
 
       {/* Center Logo Card */}
-      <div className="relative z-10 w-48 h-48 md:w-64 md:h-64 animate-splash-logo rounded-[2rem] overflow-hidden shadow-[0_0_80px_rgba(22,163,74,0.15)] ring-1 ring-white/10">
+      <div className="relative z-10 w-48 h-48 md:w-64 md:h-64 animate-splash-logo rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-white/10 bg-black/50">
         <Image 
           src="/logo.jpeg" 
           alt="Nauka Logo" 
