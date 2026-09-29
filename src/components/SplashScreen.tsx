@@ -38,16 +38,30 @@ export function SplashScreen() {
 
   return (
     <div 
-      className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-opacity duration-1000 ease-in-out ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center transition-opacity duration-1000 ease-in-out ${
         fade ? "opacity-0" : "opacity-100"
       }`}
     >
-      <div className="relative w-48 h-48 md:w-64 md:h-64 animate-splash-logo">
+      {/* Immersive Blurred Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-black">
+        <Image 
+          src="/logo.jpeg" 
+          alt="Background Blur" 
+          fill 
+          className="object-cover blur-[100px] opacity-60 scale-125"
+          priority
+        />
+        {/* Dark overlay to ensure the center logo still pops */}
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
+
+      {/* Center Logo Card */}
+      <div className="relative z-10 w-48 h-48 md:w-64 md:h-64 animate-splash-logo rounded-[2rem] overflow-hidden shadow-[0_0_80px_rgba(22,163,74,0.15)] ring-1 ring-white/10">
         <Image 
           src="/logo.jpeg" 
           alt="Nauka Logo" 
           fill 
-          className="object-contain"
+          className="object-cover"
           priority
         />
       </div>
