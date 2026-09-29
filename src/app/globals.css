@@ -50,23 +50,36 @@ body {
   background: #555;
 }
 
-@keyframes splash-scale {
+@keyframes splash-heartbeat-explode {
   0% { 
     transform: scale(0.5); 
     opacity: 0; 
-    filter: blur(10px); 
   }
   15% { 
+    transform: scale(1.1); 
     opacity: 1; 
-    filter: blur(0px); 
+  }
+  30% { 
+    transform: scale(0.95); 
+  }
+  45% { 
+    transform: scale(1.15); 
+  }
+  60% { 
+    transform: scale(1); 
+  }
+  80% { 
+    transform: scale(1); 
+    opacity: 1;
+    filter: blur(0px);
   }
   100% { 
-    transform: scale(1.6); 
-    opacity: 1; 
-    filter: blur(0px); 
+    transform: scale(40); 
+    opacity: 0; 
+    filter: blur(20px);
   }
 }
 
 .animate-splash-logo {
-  animation: splash-scale 2.5s ease-out forwards;
+  animation: splash-heartbeat-explode 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }

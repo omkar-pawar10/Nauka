@@ -18,15 +18,15 @@ export function SplashScreen() {
     // Set the flag in session storage
     sessionStorage.setItem("nauka_splash_shown", "true");
 
-    // Start fade out after 2.5 seconds
+    // Start fade out at 2.4 seconds (exactly when the logo starts exploding)
     const fadeTimer = setTimeout(() => {
       setFade(true);
-    }, 2500);
+    }, 2400);
 
-    // Completely unmount after 3.5 seconds (2.5s hold + 1s fade)
+    // Completely unmount after 3 seconds
     const unmountTimer = setTimeout(() => {
       setShow(false);
-    }, 3500);
+    }, 3000);
 
     return () => {
       clearTimeout(fadeTimer);
