@@ -11,7 +11,7 @@ export function SplashScreen() {
     // Check if we've already shown the splash screen in this session
     const hasShown = sessionStorage.getItem("nauka_splash_shown");
     if (hasShown) {
-      setShow(false);
+      setTimeout(() => setShow(false), 0);
       return;
     }
 
