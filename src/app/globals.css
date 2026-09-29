@@ -55,20 +55,17 @@ body {
     transform: scale(0.5); 
     opacity: 0; 
   }
-  15% { 
+  20% { 
     transform: scale(1.1); 
     opacity: 1; 
   }
-  30% { 
+  40% { 
     transform: scale(0.95); 
   }
-  45% { 
+  60% { 
     transform: scale(1.15); 
   }
-  60% { 
-    transform: scale(1); 
-  }
-  80% { 
+  75% { 
     transform: scale(1); 
     opacity: 1;
     filter: blur(0px);
@@ -81,5 +78,5 @@ body {
 }
 
 .animate-splash-logo {
-  animation: splash-heartbeat-explode 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: splash-heartbeat-explode 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
