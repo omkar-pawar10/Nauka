@@ -80,3 +80,8 @@ body {
 .animate-splash-logo {
   animation: splash-heartbeat-explode 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* Dark theme for OpenStreetMap tiles */
+.map-tiles {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}

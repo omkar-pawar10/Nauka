@@ -56,7 +56,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
         </div>
       </div>
       
-      <div className="flex-1 py-2 md:py-4 overflow-x-auto md:overflow-y-auto">
+      <div className="flex-1 py-2 md:py-4 overflow-x-auto md:overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="px-4 mb-2 hidden md:block">
           <h2 className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase mb-4">Workspaces</h2>
         </div>

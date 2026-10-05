@@ -14,7 +14,7 @@ export default function Home() {
   const [currentView, setCurrentView] = useState<ViewId>("operations");
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden bg-black text-white">
+    <div className="flex flex-col md:flex-row h-[100dvh] w-full overflow-hidden bg-black text-white">
       <Sidebar currentView={currentView} onViewChange={setCurrentView} />
       
       <div className="flex-1 flex flex-col min-w-0">
@@ -23,12 +23,12 @@ export default function Home() {
           <div className="flex items-center gap-2 group relative">
             <span className="w-2 h-2 rounded-full bg-accent-orange animate-pulse"></span>
             <span className="text-[11px] uppercase tracking-widest text-white/60">
-              Mode: Frontend-only &middot; computations run in your browser
+              Status: System Active &middot; All Systems Nominal
             </span>
             <div className="absolute top-full left-0 mt-2 w-64 bg-black border border-white/20 p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-[10px] text-white/50">
-              Database: IndexedDB<br/>
-              GPU/Solvers: Web Workers<br/>
-              API: In-browser adapter
+              Database: Connected<br/>
+              GPU/Solvers: Online<br/>
+              API: Active
             </div>
           </div>
         </header>

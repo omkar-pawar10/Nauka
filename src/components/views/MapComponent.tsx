@@ -44,11 +44,39 @@ export default function MapComponent({ selectedVessel }: { selectedVessel: strin
   // Center on Indian Ocean / Middle East roughly
   const center: [number, number] = [15.0, 60.0];
 
-  // Draw some great circle lines between ports for effect
-  const routes = [
-    [PORTS[0], PORTS[3]], // Singapore to Jebel Ali
-    [PORTS[3], PORTS[1]], // Jebel Ali to Rotterdam
-    [PORTS[0], PORTS[2]], // Singapore to Shanghai
+  // Draw navigable routes with waypoints to avoid crossing land
+  const routes: [number, number][][] = [
+    // Singapore to Jebel Ali
+    [
+      [PORTS[0].lat, PORTS[0].lon],
+      [5.9, 95.3], // Malacca Strait
+      [5.8, 80.5], // South of Sri Lanka
+      [24.0, 59.5], // Gulf of Oman
+      [26.2, 56.4], // Strait of Hormuz
+      [PORTS[3].lat, PORTS[3].lon]
+    ],
+    // Jebel Ali to Rotterdam
+    [
+      [PORTS[3].lat, PORTS[3].lon],
+      [26.2, 56.4], // Strait of Hormuz
+      [24.0, 59.5], // Gulf of Oman
+      [12.5, 44.5], // Gulf of Aden
+      [15.0, 41.5], // Red Sea
+      [29.9, 32.5], // Suez Canal South
+      [31.3, 32.3], // Suez Canal North
+      [35.0, 20.0], // Mediterranean Sea
+      [35.9, -5.5], // Strait of Gibraltar
+      [39.0, -10.0], // Coast of Portugal
+      [49.5, -4.5], // English Channel
+      [PORTS[1].lat, PORTS[1].lon]
+    ],
+    // Singapore to Shanghai
+    [
+      [PORTS[0].lat, PORTS[0].lon],
+      [15.0, 115.0], // South China Sea
+      [24.5, 120.0], // Taiwan Strait
+      [PORTS[2].lat, PORTS[2].lon]
+    ]
   ];
 
   return (
@@ -60,7 +88,8 @@ export default function MapComponent({ selectedVessel }: { selectedVessel: strin
       attributionControl={false}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        className="map-tiles"
       />
 
       {/* Render Ports */}
@@ -76,14 +105,15 @@ export default function MapComponent({ selectedVessel }: { selectedVessel: strin
       {routes.map((route, i) => (
         <Polyline 
           key={i} 
-          positions={[[route[0].lat, route[0].lon], [route[1].lat, route[1].lon]]} 
+          positions={route} 
           pathOptions={{ color: 'rgba(255, 255, 255, 0.2)', dashArray: '4, 4', weight: 2 }} 
         />
       ))}
 
       {/* Render a mock vessel position somewhere along the Singapore - Jebel Ali route */}
       <Marker 
-        position={[10.0, 80.0]} 
+        position={[5.85, 87.9]} 
+
         icon={createVesselIcon(selectedVessel === 'VSL-8921' ? '#d97706' : '#22c55e')}
       >
         <Popup className="custom-popup">
